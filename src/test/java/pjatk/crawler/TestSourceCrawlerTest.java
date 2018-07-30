@@ -1,13 +1,13 @@
 package pjatk.crawler;
 
-import org.junit.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import pjatk.domain.crawler.CrawlQuery;
-import pjatk.domain.data.DataBlock;
-
 import java.util.List;
 
+import org.junit.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+
 import static org.assertj.core.api.Assertions.assertThat;
+import pjatk.domain.crawler.CrawlQuery;
+import pjatk.domain.data.DataBlock;
 
 /**
  * @author Michał Dąbrowski

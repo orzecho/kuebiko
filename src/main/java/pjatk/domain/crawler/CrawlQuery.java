@@ -1,10 +1,10 @@
 package pjatk.domain.crawler;
 
+import java.time.LocalDate;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDate;
 
 /**
  * @author Michał Dąbrowski

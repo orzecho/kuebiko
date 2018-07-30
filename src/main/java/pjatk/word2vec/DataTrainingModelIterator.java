@@ -1,13 +1,14 @@
 package pjatk.word2vec;
 
-import lombok.RequiredArgsConstructor;
-import org.deeplearning4j.text.sentenceiterator.SentenceIterator;
-import org.deeplearning4j.text.sentenceiterator.SentencePreProcessor;
-import pjatk.domain.data.DataBlock;
-import pjatk.domain.data.DataTrainingModel;
-
 import java.util.Arrays;
 import java.util.Iterator;
+
+import org.deeplearning4j.text.sentenceiterator.SentenceIterator;
+import org.deeplearning4j.text.sentenceiterator.SentencePreProcessor;
+
+import lombok.RequiredArgsConstructor;
+import pjatk.domain.data.DataBlock;
+import pjatk.domain.data.DataTrainingModel;
 
 /**
  * @author Michał Dąbrowski

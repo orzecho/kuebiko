@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
  */
 @NoArgsConstructor
 @Component
-public class TestSourceCrawlerControllerController implements SourceCrawlerController {
+public class TestSourceCrawler implements SourceCrawlerController {
     private List<String> rawData = new ArrayList<>();
 
     @Override
@@ -26,7 +26,7 @@ public class TestSourceCrawlerControllerController implements SourceCrawlerContr
                 .collect(Collectors.toList());
     }
 
-    public TestSourceCrawlerControllerController addDatum(String datum) {
+    public TestSourceCrawler addDatum(String datum) {
         this.rawData.add(datum);
         return this;
     }

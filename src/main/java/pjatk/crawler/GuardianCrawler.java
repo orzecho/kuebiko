@@ -1,29 +1,59 @@
 package pjatk.crawler;
 
-import edu.uci.ics.crawler4j.crawler.Page;
-import edu.uci.ics.crawler4j.crawler.WebCrawler;
-import edu.uci.ics.crawler4j.parser.HtmlParseData;
-import edu.uci.ics.crawler4j.url.WebURL;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
-import pjatk.domain.data.DataBlock;
-import pjatk.domain.data.DataSource;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.Month;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoField;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import java.io.IOException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
+import org.jsoup.Jsoup;
+import org.springframework.stereotype.Component;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
+
+import edu.uci.ics.crawler4j.crawler.Page;
+import edu.uci.ics.crawler4j.crawler.WebCrawler;
+import edu.uci.ics.crawler4j.parser.HtmlParseData;
+import edu.uci.ics.crawler4j.url.WebURL;
+import pjatk.domain.data.DataBlock;
+import pjatk.domain.data.DataSource;
+import pjatk.domain.data.Tag;
+import pjatk.persist.DataBlockRepository;
+import pjatk.persist.TagService;
 
 /**
  * @author Michał Dąbrowski
  */
+@Component
 public class GuardianCrawler extends WebCrawler {
 
     private static final Pattern IMAGE_EXTENSIONS = Pattern.compile(".*\\.(bmp|gif|jpg|png)$");
+    private static final Pattern DATE_SEARCH_PATTERN = Pattern.compile(".*(\\d{4}.\\w{3}.\\d{2}).*");
+    private static final Pattern DATE_PATTERN = Pattern.compile("(\\d{4}).(\\w{3}).(\\d{2})");
+    private static final Pattern LIVE_PATTERN = Pattern.compile(".*\\/live\\/.*");
+    private static final Pattern GALLERY_PATERN = Pattern.compile(".*\\/gallery\\/.*");
+
+    private boolean processLive = false;
+
+    private final DataBlockRepository dataBlockRepository;
+    private final TagService tagService;
+
+    public GuardianCrawler(DataBlockRepository dataBlockRepository, TagService tagService) {
+        super();
+        this.dataBlockRepository = dataBlockRepository;
+        this.tagService = tagService;
+    }
 
     @Override
     public boolean shouldVisit(Page referringPage, WebURL url) {
@@ -36,41 +66,71 @@ public class GuardianCrawler extends WebCrawler {
 
     @Override
     public void visit(Page page) {
-        Pattern datePattern = Pattern.compile(".*(\\d{4}.\\w{3}.\\d{2}).*");
         String url = page.getWebURL().getURL();
         String dateString;
-        String article = null;
-        Matcher dateMatcher = datePattern.matcher(url);
-        if(dateMatcher.matches()) {
+        String articleBody = null;
+        Matcher dateMatcher = DATE_SEARCH_PATTERN.matcher(url);
+        Matcher liveMatcher = LIVE_PATTERN.matcher(url);
+        Matcher galleryMatcher = GALLERY_PATERN.matcher(url);
+        List<Tag> tags = new ArrayList<>();
+        if(dateMatcher.matches() && (processLive || !liveMatcher.matches()) && !galleryMatcher.matches()) {
             dateString = dateMatcher.group(1);
 
             if (page.getParseData() instanceof HtmlParseData) {
-                HtmlParseData htmlParseData = (HtmlParseData) page.getParseData();
-                String html = htmlParseData.getHtml();
+                org.jsoup.nodes.Document document = Jsoup.parse(((HtmlParseData) page.getParseData()).getHtml());
 
-                Document document = parseHtml(html);
+                articleBody = document.body().select("div").select(".content__main").text();
 
-                NodeList nodeList = document.getElementsByTagName("div");
-                Node topicNode;
-                for(int i = 0; i < nodeList.getLength(); i++) {
-                    Node node = nodeList.item(i);
-                    if(node.getAttributes().getNamedItem("itemProp").getNodeValue().equals("articleBody")) {
-                        article = stripHtml(node.getNodeValue());
-                    }
-                    //TODO tags
-                }
-
-
+                tags = document.body().select("div").select(".submeta__link-item").eachText()
+                        .stream().map(tagService::findOrCreateTag).collect(Collectors.toList());
             }
 
             DataBlock dataBlock = DataBlock.builder()
                     .origin(DataSource.GUARDIAN)
-                    .content(article)
-                    .tags()
-                    .date(parseDateString(dateString))
+                    .content(articleBody)
+                    .tags(tags)
+                    .date(parseDateString(dateString).orElse(null))
+                    .word2VecUnprocessed(true)
                     .build();
-            //TODO persist dataBlock
+            dataBlock.createContentHash();
+
+            if(!dataBlockRepository.findByContentHash(dataBlock.getContentHash()).isPresent()) {
+                dataBlockRepository.save(dataBlock);
+            }
         }
+    }
+
+    public Optional<LocalDate> parseDateString(String dateString) {
+        Optional<String> year;
+        Optional<Integer> month;
+        Optional<String> day;
+        Matcher dateMatcher = DATE_PATTERN.matcher(dateString);
+        if(dateMatcher.find()) {
+            year = Optional.of(dateMatcher.group(1));
+            month = Optional.of(DateTimeFormatter.ofPattern("MMM")
+                        .withLocale(Locale.ENGLISH).parse(firstCharacterToUpper(dateMatcher.group(2))).get(ChronoField.MONTH_OF_YEAR));
+            day = Optional.of(dateMatcher.group(3));
+        } else {
+            year = Optional.empty();
+            month = Optional.empty();
+            day = Optional.empty();
+        }
+
+        return year.flatMap(y -> month
+                .flatMap(m -> day
+                        .flatMap(d -> Optional.of(LocalDate.of(Integer.valueOf(y), Month.of(m), Integer.valueOf(d))))));
+    }
+
+    private String firstCharacterToUpper(String string) {
+        String firstLetter = string.substring(0,1).toUpperCase();
+        String lowerPart = string.substring(1).toLowerCase();
+        return firstLetter + lowerPart;
+    }
+
+    public String stripHtml(String nodeValue) {
+        Pattern htmlTagPattern = Pattern.compile("<[^>]*>");
+        Matcher matcher = htmlTagPattern.matcher(nodeValue);
+        return matcher.replaceAll("");
     }
 
     private Document parseHtml(String html) {

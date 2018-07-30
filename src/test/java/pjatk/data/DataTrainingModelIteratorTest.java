@@ -2,16 +2,10 @@ package pjatk.data;
 
 import org.junit.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import pjatk.DataTest;
-import pjatk.domain.data.DataBlock;
-import pjatk.domain.data.DataSource;
-import pjatk.domain.data.DataTrainingModel;
-import pjatk.word2vec.DataTrainingModelIterator;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import pjatk.DataTest;
+import pjatk.word2vec.DataTrainingModelIterator;
 
 /**
  * @author Michał Dąbrowski

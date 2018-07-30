@@ -1,30 +1,27 @@
 package pjatk.crawler;
 
-import org.junit.Ignore;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
 import edu.uci.ics.crawler4j.crawler.CrawlConfig;
 import edu.uci.ics.crawler4j.crawler.CrawlController;
 import edu.uci.ics.crawler4j.fetcher.PageFetcher;
 import edu.uci.ics.crawler4j.robotstxt.RobotstxtConfig;
 import edu.uci.ics.crawler4j.robotstxt.RobotstxtServer;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
-/**
- * @author Michał Dąbrowski
- */
-@SpringBootTest
-@RunWith(SpringRunner.class)
-public class GuardianCrawlerTest {
-    @Autowired
-    private GuardianCrawlerFactory guardianCrawlerFactory;
+@RequiredArgsConstructor
+@Component
+@Slf4j
+public class GuardianCrawlerJob {
+    private final GuardianCrawlerFactory guardianCrawlerFactory;
 
-    @Ignore
-    public void guardianCrawlerTest() throws Exception {
+    @Scheduled(fixedDelay = 1000 * 60 * 60 * 24)
+    public void crawl() throws Exception {
+        log.info("Starting crawl job.");
         String crawlStorageFolder = "./data/crawl/root";
-        int numberOfCrawlers = 7;
+        int numberOfCrawlers = 6;
 
         CrawlConfig config = new CrawlConfig();
         config.setCrawlStorageFolder(crawlStorageFolder);
@@ -37,5 +34,6 @@ public class GuardianCrawlerTest {
         controller.addSeed("https://www.theguardian.com/");
 
         controller.start(guardianCrawlerFactory, numberOfCrawlers);
+        log.info("Ended crawl job.");
     }
 }

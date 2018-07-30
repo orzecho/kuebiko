@@ -1,12 +1,12 @@
 package pjatk;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import pjatk.domain.data.DataBlock;
 import pjatk.domain.data.DataSource;
 import pjatk.domain.data.DataTrainingModel;
 import pjatk.word2vec.DataTrainingModelIterator;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author Michał Dąbrowski

@@ -1,12 +1,12 @@
 package pjatk.domain.word2vec;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
 import org.deeplearning4j.text.sentenceiterator.SentenceIterator;
 import org.deeplearning4j.text.tokenization.tokenizer.preprocessor.CommonPreprocessor;
 import org.deeplearning4j.text.tokenization.tokenizerfactory.DefaultTokenizerFactory;
 import org.deeplearning4j.text.tokenization.tokenizerfactory.TokenizerFactory;
+
+import lombok.Builder;
+import lombok.Getter;
 
 /**
  * Class holds configuration about word2vec model.
