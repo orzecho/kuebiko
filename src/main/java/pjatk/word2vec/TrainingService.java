@@ -25,18 +25,13 @@ public class TrainingService {
         DataTrainingModel dataTrainingModel = new DataTrainingModel(dataBlockList);
         SentenceIterator sentenceIterator = new DataTrainingModelIterator(dataTrainingModel);
 
-        Word2VecConfiguration word2VecConfiguration = Word2VecConfiguration.builder()
-                .iterations(100)
-                .layerSize(100)
-                .seed(42)
-                .minWordFrequency(3)
-                .windowSize(5)
-                .sentenceIterator(sentenceIterator)
-                .tokenizerFactory(Word2VecConfiguration.getDefaultTokenizerFactory())
-                .build();
+        Word2VecConfiguration word2VecConfiguration = defaultConfiguration(sentenceIterator);
 
         Word2Vec word2Vec = word2VecService.train(word2VecConfiguration);
-        dataBlockList.forEach(dataBlock -> dataBlock.setWord2VecUnprocessed(true));
+        dataBlockList.forEach(dataBlock -> {
+            dataBlock.setWord2VecUnprocessed(false);
+            dataBlockRepository.save(dataBlock);
+        });
         WordVectorSerializer.writeWord2VecModel(word2Vec, WORD_2_VEC_MODEL_PATH);
 
         return word2Vec;
@@ -48,12 +43,28 @@ public class TrainingService {
         DataTrainingModel dataTrainingModel = new DataTrainingModel(dataBlockList);
         SentenceIterator sentenceIterator = new DataTrainingModelIterator(dataTrainingModel);
 
-        word2Vec.setSentenceIterator(sentenceIterator);
-        word2Vec.fit();
+        Word2VecConfiguration word2VecConfiguration = defaultConfiguration(sentenceIterator);
 
-        dataBlockList.forEach(dataBlock -> dataBlock.setWord2VecUnprocessed(true));
+        word2Vec = word2VecService.train(word2Vec, word2VecConfiguration);
+
+        dataBlockList.forEach(dataBlock -> {
+            dataBlock.setWord2VecUnprocessed(false);
+            dataBlockRepository.save(dataBlock);
+        });
         WordVectorSerializer.writeWord2VecModel(word2Vec, WORD_2_VEC_MODEL_PATH);
 
         return word2Vec;
+    }
+
+    private Word2VecConfiguration defaultConfiguration(SentenceIterator sentenceIterator) {
+        return Word2VecConfiguration.builder()
+                    .iterations(100)
+                    .layerSize(100)
+                    .seed(42)
+                    .minWordFrequency(3)
+                    .windowSize(5)
+                    .sentenceIterator(sentenceIterator)
+                    .tokenizerFactory(Word2VecConfiguration.getDefaultTokenizerFactory())
+                    .build();
     }
 }

@@ -40,7 +40,11 @@ public class DataBlock {
     @ManyToMany
     private List<Tag> tags;
     @Setter
-    private Boolean word2VecUnprocessed = false;
+    private Boolean word2VecUnprocessed = true;
+    @Setter
+    private Double cosineSimilarityToBadWords;
+    @Setter
+    private Double cosineSimilarityToGoodWords;
 
     public void createContentHash() {
         MessageDigest messageDigest = null;

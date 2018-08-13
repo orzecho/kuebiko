@@ -16,4 +16,6 @@ public interface DataBlockRepository extends JpaRepository<DataBlock, Long> {
     Optional<DataBlock> findByContentHash(String contentHash);
 
     Long countAllByWord2VecUnprocessedIsTrue();
+
+    List<DataBlock> findByWord2VecUnprocessedIsFalse();
 }

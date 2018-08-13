@@ -15,6 +15,13 @@ public class Word2VecService {
         return word2Vec;
     }
 
+    public Word2Vec train(Word2Vec word2Vec, Word2VecConfiguration word2VecConfiguration) {
+        word2Vec.setSentenceIterator(word2VecConfiguration.getSentenceIterator());
+        word2Vec.setTokenizerFactory(word2VecConfiguration.getTokenizerFactory());
+        word2Vec.fit();
+        return word2Vec;
+    }
+
     private Word2Vec buildWord2VecModel(Word2VecConfiguration word2VecConfiguration) {
         return new Word2Vec.Builder()
                 .minWordFrequency(word2VecConfiguration.getMinWordFrequency())

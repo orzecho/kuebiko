@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * Tag holds some meta information about piece of information.
@@ -25,6 +26,10 @@ public class Tag {
     @Id
     @GeneratedValue
     private Long id;
+
     @NaturalId
     private String content;
+
+    @Setter
+    private String similarWords;
 }
