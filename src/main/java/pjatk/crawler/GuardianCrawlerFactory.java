@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import pjatk.persist.DataBlockRepository;
+import pjatk.persist.TagRepository;
 import pjatk.persist.TagService;
 
 @Component
@@ -17,9 +18,10 @@ public class GuardianCrawlerFactory implements CrawlController.WebCrawlerFactory
 
     private final DataBlockRepository dataBlockRepository;
     private final TagService tagService;
+    private final TagRepository tagRepository;
 
     @Override
     public GuardianCrawler newInstance() throws Exception {
-        return new GuardianCrawler(dataBlockRepository, tagService);
+        return new GuardianCrawler(dataBlockRepository, tagService, tagRepository);
     }
 }

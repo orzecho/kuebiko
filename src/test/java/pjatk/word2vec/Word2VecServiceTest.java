@@ -5,7 +5,7 @@ import org.deeplearning4j.text.sentenceiterator.SentenceIterator;
 import org.junit.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import pjatk.DataTest;
-import pjatk.domain.word2vec.Word2VecConfiguration;
+import pjatk.domain.modelconfig.Word2VecConfiguration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

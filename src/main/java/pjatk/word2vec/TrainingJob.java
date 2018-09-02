@@ -3,7 +3,6 @@ package pjatk.word2vec;
 import java.io.File;
 
 import org.deeplearning4j.models.word2vec.Word2Vec;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
@@ -20,7 +19,7 @@ public class TrainingJob {
     private final DataBlockRepository dataBlockRepository;
     private final PostTrainingJob postTrainingJob;
 
-    @Scheduled(fixedDelay = 1000 * 60 * 60 * 24)
+//    @Scheduled(fixedDelay = 1000 * 60 * 60 * 24)
     public void train() throws InterruptedException {
         log.info("Starting training job.");
         waitForSufficientNumberOfDataBlocks();

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import pjatk.domain.data.DataBlock;
 import pjatk.domain.data.DataTrainingModel;
-import pjatk.domain.word2vec.Word2VecConfiguration;
+import pjatk.domain.modelconfig.Word2VecConfiguration;
 import pjatk.persist.DataBlockRepository;
 
 @Service
@@ -59,6 +59,7 @@ public class TrainingService {
     private Word2VecConfiguration defaultConfiguration(SentenceIterator sentenceIterator) {
         return Word2VecConfiguration.builder()
                     .iterations(100)
+                    .epochs(10)
                     .layerSize(100)
                     .seed(42)
                     .minWordFrequency(3)

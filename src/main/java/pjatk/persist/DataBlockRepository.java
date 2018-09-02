@@ -13,9 +13,15 @@ import pjatk.domain.data.DataBlock;
 public interface DataBlockRepository extends JpaRepository<DataBlock, Long> {
     List<DataBlock> findByWord2VecUnprocessedIsTrue();
 
+    List<DataBlock> findByWord2VecUnprocessedIsFalse();
+
+    List<DataBlock> findByParagraphVectorsUnprocessedIsTrue();
+
+    List<DataBlock> findByParagraphVectorsUnprocessedIsFalse();
+
     Optional<DataBlock> findByContentHash(String contentHash);
 
     Long countAllByWord2VecUnprocessedIsTrue();
 
-    List<DataBlock> findByWord2VecUnprocessedIsFalse();
+    Long countAllByParagraphVectorsUnprocessedIsTrue();
 }

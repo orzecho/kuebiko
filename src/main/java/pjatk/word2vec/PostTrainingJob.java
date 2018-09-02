@@ -1,6 +1,7 @@
 package pjatk.word2vec;
 
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.deeplearning4j.models.word2vec.Word2Vec;
@@ -17,8 +18,8 @@ import pjatk.persist.TagRepository;
 @RequiredArgsConstructor
 @Slf4j
 public class PostTrainingJob {
-    private static final String[] GOOD_WORDS = {"good", "happy", "success"};
-    private static final String[] BAD_WORDS = {"bad", "evil", "tragic", "failure"};
+    private static final String[] GOOD_WORDS = {"good", "success"};
+    private static final String[] BAD_WORDS = {"bad", "failure"};
 
     private final DataBlockRepository dataBlockRepository;
     private final TagRepository tagRepository;
@@ -38,16 +39,22 @@ public class PostTrainingJob {
         dataBlock.setCosineSimilarityToGoodWords(Arrays.stream(dataBlock.getContent().split("\\s|\\W"))
                 .map(token -> Arrays.stream(GOOD_WORDS)
                         .map(goodWord -> word2Vec.similarity(token, goodWord))
+                        .filter(Objects::nonNull)
+                        .filter(e -> !(e.isInfinite() || e.isNaN()))
                         .collect(Collectors.averagingDouble(e -> e)))
+                .filter(e -> !(e.isInfinite() || e.isNaN()))
                 .collect(Collectors.averagingDouble(e -> e)));
-        dataBlock.setCosineSimilarityToGoodWords(Arrays.stream(dataBlock.getContent().split("\\s|\\W"))
+        dataBlock.setCosineSimilarityToBadWords(Arrays.stream(dataBlock.getContent().split("\\s|\\W"))
                 .map(token -> Arrays.stream(BAD_WORDS)
-                        .map(goodWord -> word2Vec.similarity(token, goodWord))
+                        .map(badWord -> word2Vec.similarity(token, badWord))
+                        .filter(Objects::nonNull)
+                        .filter(e -> !(e.isInfinite() || e.isNaN()))
                         .collect(Collectors.averagingDouble(e -> e)))
+                .filter(e -> !(e.isInfinite() || e.isNaN()))
                 .collect(Collectors.averagingDouble(e -> e)));
         log.info("DataBlock(" + dataBlock.getId() + "): bad cosine similarity(" + dataBlock
                 .getCosineSimilarityToBadWords() + ") good cosine similarity(" + dataBlock
-                .getCosineSimilarityToGoodWords() + ")");
+                .getCosineSimilarityToGoodWords() + ") Positive?: " + dataBlock.isPositiveByCosineSimilarites());
         dataBlockRepository.save(dataBlock);
     }
 

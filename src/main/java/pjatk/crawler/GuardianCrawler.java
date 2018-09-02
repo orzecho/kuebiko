@@ -17,6 +17,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.hibernate.Hibernate;
 import org.jsoup.Jsoup;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
@@ -30,6 +31,7 @@ import pjatk.domain.data.DataBlock;
 import pjatk.domain.data.DataSource;
 import pjatk.domain.data.Tag;
 import pjatk.persist.DataBlockRepository;
+import pjatk.persist.TagRepository;
 import pjatk.persist.TagService;
 
 /**
@@ -47,12 +49,14 @@ public class GuardianCrawler extends WebCrawler {
     private boolean processLive = false;
 
     private final DataBlockRepository dataBlockRepository;
+    private final TagRepository tagRepository;
     private final TagService tagService;
 
-    public GuardianCrawler(DataBlockRepository dataBlockRepository, TagService tagService) {
+    public GuardianCrawler(DataBlockRepository dataBlockRepository, TagService tagService, TagRepository tagRepository) {
         super();
         this.dataBlockRepository = dataBlockRepository;
         this.tagService = tagService;
+        this.tagRepository = tagRepository;
     }
 
     @Override
@@ -84,17 +88,18 @@ public class GuardianCrawler extends WebCrawler {
                 tags = document.body().select("div").select(".submeta__link-item").eachText()
                         .stream().map(tagService::findOrCreateTag).collect(Collectors.toList());
             }
-
-            DataBlock dataBlock = DataBlock.builder()
+       DataBlock dataBlock = DataBlock.builder()
                     .origin(DataSource.GUARDIAN)
                     .content(articleBody)
                     .tags(tags)
                     .date(parseDateString(dateString).orElse(null))
                     .word2VecUnprocessed(true)
+                    .paragraphVectorsUnprocessed(true)
                     .build();
             dataBlock.createContentHash();
 
             if(!dataBlockRepository.findByContentHash(dataBlock.getContentHash()).isPresent()) {
+                Hibernate.initialize(dataBlock.getTags());
                 dataBlockRepository.save(dataBlock);
             }
         }

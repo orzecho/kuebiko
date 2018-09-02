@@ -2,7 +2,7 @@ package pjatk.word2vec;
 
 import org.deeplearning4j.models.word2vec.Word2Vec;
 import org.springframework.stereotype.Service;
-import pjatk.domain.word2vec.Word2VecConfiguration;
+import pjatk.domain.modelconfig.Word2VecConfiguration;
 
 /**
  * @author Michał Dąbrowski
@@ -26,6 +26,7 @@ public class Word2VecService {
         return new Word2Vec.Builder()
                 .minWordFrequency(word2VecConfiguration.getMinWordFrequency())
                 .iterations(word2VecConfiguration.getIterations())
+                .epochs(word2VecConfiguration.getEpochs())
                 .layerSize(word2VecConfiguration.getLayerSize())
                 .seed(word2VecConfiguration.getSeed())
                 .windowSize(word2VecConfiguration.getWindowSize())

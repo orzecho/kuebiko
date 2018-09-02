@@ -9,8 +9,11 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
+import javax.persistence.Transient;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -38,9 +41,14 @@ public class DataBlock {
     @Column(unique = true)
     private String contentHash;
     @ManyToMany
+    @JoinTable(name = "DATABLOCK_TAG",
+            joinColumns = { @JoinColumn(name = "DATABLOCK_ID") },
+            inverseJoinColumns = { @JoinColumn(name = "TAG_ID") })
     private List<Tag> tags;
     @Setter
     private Boolean word2VecUnprocessed = true;
+    @Setter
+    private Boolean paragraphVectorsUnprocessed = true;
     @Setter
     private Double cosineSimilarityToBadWords;
     @Setter
@@ -56,5 +64,14 @@ public class DataBlock {
         assert messageDigest != null;
         messageDigest.update(this.content.getBytes());
         this.contentHash = new String(messageDigest.digest());
+    }
+
+    @Transient
+    public Boolean isPositiveByCosineSimilarites() {
+        if(getCosineSimilarityToBadWords() == null || getCosineSimilarityToGoodWords() == null) {
+            return null;
+        } else {
+            return getCosineSimilarityToGoodWords() > getCosineSimilarityToBadWords();
+        }
     }
 }
