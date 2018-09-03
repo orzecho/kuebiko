@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
+import pjatk.doc2vec.BestTagInBlockLabelAwareSentenceIteratorFactory;
 import static pjatk.doc2vec.DataBlockFetchers.allUnprocessedBlocks;
 import pjatk.doc2vec.IndiscriminateLabelAwareSentenceIteratorFactory;
 import static pjatk.doc2vec.LabelFetchers.allProcessedLabels;
@@ -34,8 +35,9 @@ public class ParagraphVectorsController {
     @Transactional
     public void trainBestTagsInDataBlock() {
         log.info("Starting training, only choose most popular tag from data block.");
-        //TODO implement
-        throw new UnsupportedOperationException();
+        val factory = new BestTagInBlockLabelAwareSentenceIteratorFactory();
+        ParagraphVectors paragraphVectors = paragraphVectorsTrainingService.train(allUnprocessedBlocks(), factory);
+        paragraphVectorsResultService.results(paragraphVectors, allUnprocessedBlocks(), allProcessedLabels());
     }
 
     @GetMapping("/train-best-tags-in-general")
