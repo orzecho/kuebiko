@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import pjatk.doc2vec.BestTagInBlockLabelAwareSentenceIteratorFactory;
 import static pjatk.doc2vec.DataBlockFetchers.allUnprocessedBlocks;
+import static pjatk.doc2vec.DataBlockFetchers.blocksWithBestTags;
 import pjatk.doc2vec.IndiscriminateLabelAwareSentenceIteratorFactory;
 import static pjatk.doc2vec.LabelFetchers.allProcessedLabels;
 import pjatk.doc2vec.ParagraphVectorsResultService;
@@ -40,11 +41,21 @@ public class ParagraphVectorsController {
         paragraphVectorsResultService.results(paragraphVectors, allUnprocessedBlocks(), allProcessedLabels());
     }
 
-    @GetMapping("/train-best-tags-in-general")
+    @GetMapping("/train-best-tags-in-general/one-tag-per-block")
+    @Transactional
+    public void trainBestTagsInGeneralOneTagPerBlock() {
+        log.info("Starting training, get blocks with best tags, one tag per block.");
+        val factory = new BestTagInBlockLabelAwareSentenceIteratorFactory();
+        ParagraphVectors paragraphVectors = paragraphVectorsTrainingService.train(blocksWithBestTags(), factory);
+        paragraphVectorsResultService.results(paragraphVectors, allUnprocessedBlocks(), allProcessedLabels());
+    }
+
+    @GetMapping("/train-best-tags-in-general/all-tags-in-block")
     @Transactional
     public void trainBestTagsInGeneral() {
-        log.info("Starting training, get blocks with best tags");
-        //TODO implement
-        throw new UnsupportedOperationException();
+        log.info("Starting training, get blocks with best tags, all tags in block.");
+        val factory = new IndiscriminateLabelAwareSentenceIteratorFactory();
+        ParagraphVectors paragraphVectors = paragraphVectorsTrainingService.train(blocksWithBestTags(), factory);
+        paragraphVectorsResultService.results(paragraphVectors, allUnprocessedBlocks(), allProcessedLabels());
     }
 }
