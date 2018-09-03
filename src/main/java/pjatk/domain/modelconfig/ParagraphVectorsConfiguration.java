@@ -1,5 +1,6 @@
 package pjatk.domain.modelconfig;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.deeplearning4j.text.documentiterator.LabelsSource;
@@ -29,9 +30,26 @@ public class ParagraphVectorsConfiguration {
     private Integer seed;
     private Integer windowSize;
 
+    public static ParagraphVectorsConfiguration defaultConfiguration(LabelAwareSentenceIterator sentenceIterator,
+            List<String> labels) {
+        return ParagraphVectorsConfiguration.builder()
+                .iterations(50) //TODO this should be tailored
+                .epochs(1) //TODO this should be tailored
+                .layerSize(100)
+                .seed(42)
+                .minWordFrequency(3)
+                .windowSize(5)
+                .labelAwareSentenceIterator(sentenceIterator)
+                .stopWords(new ArrayList<>()) //TODO really?
+                .tokenizerFactory(Word2VecConfiguration.getDefaultTokenizerFactory())
+                .labelsSource(new LabelsSource(labels))
+                .build();
+    }
+
     public static TokenizerFactory getDefaultTokenizerFactory() {
         TokenizerFactory tokenizerFactory = new DefaultTokenizerFactory();
         tokenizerFactory.setTokenPreProcessor(new CommonPreprocessor());
         return tokenizerFactory;
     }
+
 }

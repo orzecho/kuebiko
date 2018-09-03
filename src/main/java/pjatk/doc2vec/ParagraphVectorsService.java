@@ -16,13 +16,6 @@ public class ParagraphVectorsService {
         return paragraphVectors;
     }
 
-    public ParagraphVectors train(ParagraphVectors paragraphVectors, ParagraphVectorsConfiguration paragraphVectorsConfiguration) {
-        paragraphVectors.setSentenceIterator(paragraphVectorsConfiguration.getLabelAwareSentenceIterator());
-        paragraphVectors.setTokenizerFactory(paragraphVectorsConfiguration.getTokenizerFactory());
-        paragraphVectors.fit();
-        return paragraphVectors;
-    }
-
     private ParagraphVectors buildParagraphVectorsModel(ParagraphVectorsConfiguration paragraphVectorsConfiguration) {
         return new ParagraphVectors.Builder()
                 .minWordFrequency(paragraphVectorsConfiguration.getMinWordFrequency())
