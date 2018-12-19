@@ -1,0 +1,7 @@
+spring:
+    datasource:
+        type: com.zaxxer.hikari.HikariDataSource
+        url: jdbc:postgresql://localhost:5432/kuebiko
+        username: postgres
+    jpa:
+        hibernate.ddl-auto: validate

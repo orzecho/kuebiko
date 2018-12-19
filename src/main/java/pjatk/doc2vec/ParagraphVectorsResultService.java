@@ -8,6 +8,7 @@ import org.deeplearning4j.models.embeddings.inmemory.InMemoryLookupTable;
 import org.deeplearning4j.models.paragraphvectors.ParagraphVectors;
 import org.deeplearning4j.models.word2vec.VocabWord;
 import org.nd4j.linalg.api.ndarray.INDArray;
+import org.nd4j.linalg.exception.ND4JIllegalStateException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,31 +36,35 @@ public class ParagraphVectorsResultService {
 
     @Transactional
     public void results(ParagraphVectors paragraphVectors,
-            DataBlockFetcher dataBlockFetcher, LabelFetcher labelFetcher) {
+            DataBlockFetcher dataBlockFetcher, LabelFetcher labelFetcher, String experimentName) {
         List<DataBlock> dataBlocks = dataBlockFetcher.fetch(dataBlockRepository);
         List<String> allLabels = labelFetcher.fetch(tagRepository);
 
         dataBlocks.forEach(dataBlock -> {
             ParagraphVectorsResult paragraphVectorsResult = paragraphVectorsResultRepository.save(ParagraphVectorsResult
                     .builder()
-                    .experimentName("Bez ograniczeń")
+                    .experimentName(experimentName)
                     .dataBlock(dataBlock)
                     .build());
 
-            INDArray documentAsCentroid = meansBuilderService.documentAsVector(dataBlock,
-                    (InMemoryLookupTable<VocabWord>) paragraphVectors.getLookupTable(), paragraphVectors.getTokenizerFactory());
-            List<Score> scores = labelSeekerService.getScores(documentAsCentroid, allLabels,
-                    (InMemoryLookupTable<VocabWord>) paragraphVectors.getLookupTable());
+            try {
+                INDArray documentAsCentroid = meansBuilderService.documentAsVector(dataBlock,
+                        (InMemoryLookupTable<VocabWord>) paragraphVectors.getLookupTable(), paragraphVectors.getTokenizerFactory());
+                List<Score> scores = labelSeekerService.getScores(documentAsCentroid, allLabels,
+                        (InMemoryLookupTable<VocabWord>) paragraphVectors.getLookupTable());
 
-            log.info("Document '" + dataBlock.getTags().stream().map(Tag::getContent).collect(Collectors.toList()) + "' falls"
-                    + " into the following categories: ");
-            scores.stream().sorted(Comparator.comparing(Score::getValue, Comparator.reverseOrder()))
-                    .limit(5)
-                    .forEach(score -> log.info("        " + score.getLabel() + ": " + score.getValue()));
-            scores.forEach(score -> {
-                score.setResult(paragraphVectorsResult);
-                scoreRepository.save(score);
-            });
+                log.info("Document '" + dataBlock.getTags().stream().map(Tag::getContent).collect(Collectors.toList()) + "' falls"
+                        + " into the following categories: ");
+                scores.stream().sorted(Comparator.comparing(Score::getValue, Comparator.reverseOrder()))
+                        .limit(5)
+                        .forEach(score -> log.info("        " + score.getLabel() + ": " + score.getValue()));
+                scores.forEach(score -> {
+                    score.setResult(paragraphVectorsResult);
+                    scoreRepository.save(score);
+                });
+            } catch (ND4JIllegalStateException | IllegalStateException exception) {
+                log.error(exception.getMessage());
+            }
         });
 
     }

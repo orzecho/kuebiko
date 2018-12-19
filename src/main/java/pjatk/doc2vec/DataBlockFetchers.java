@@ -18,10 +18,23 @@ public class DataBlockFetchers {
         return DataBlockRepository::findByParagraphVectorsUnprocessedIsTrue;
     }
 
-    public static DataBlockFetcher blocksWithBestTags() {
+    public static DataBlockFetcher allBlocks() {
+        return DataBlockRepository::findAll;
+    }
+
+    public static DataBlockFetcher halfOfBlocks() {
+        return dataBlockRepository -> {
+            Long count = dataBlockRepository.count();
+            return dataBlockRepository.findAll().stream().skip(count/2).collect(Collectors.toList());
+        };
+    }
+
+    public static DataBlockFetcher halfOfBlocksWithBestTags() {
         return repository -> {
             Map<Tag, Long> tagCount = new HashMap<>();
-            List<DataBlock> allDataBlocks = repository.findByParagraphVectorsUnprocessedIsTrue();
+            Long count = repository.count();
+            List<DataBlock> allDataBlocks = repository.findAll().stream()
+                    .skip(count/2).collect(Collectors.toList());
             allDataBlocks.forEach(dataBlock -> dataBlock.getTags().forEach(tag -> {
                 if(tagCount.containsKey(tag)) {
                     tagCount.put(tag, tagCount.get(tag) + 1);

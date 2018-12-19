@@ -17,9 +17,9 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.hibernate.Hibernate;
 import org.jsoup.Jsoup;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -30,8 +30,7 @@ import edu.uci.ics.crawler4j.url.WebURL;
 import pjatk.domain.data.DataBlock;
 import pjatk.domain.data.DataSource;
 import pjatk.domain.data.Tag;
-import pjatk.persist.DataBlockRepository;
-import pjatk.persist.TagRepository;
+import pjatk.domain.service.DataBlockService;
 import pjatk.persist.TagService;
 
 /**
@@ -48,15 +47,12 @@ public class GuardianCrawler extends WebCrawler {
 
     private boolean processLive = false;
 
-    private final DataBlockRepository dataBlockRepository;
-    private final TagRepository tagRepository;
+    private final DataBlockService dataBlockService;
     private final TagService tagService;
 
-    public GuardianCrawler(DataBlockRepository dataBlockRepository, TagService tagService, TagRepository tagRepository) {
-        super();
-        this.dataBlockRepository = dataBlockRepository;
+    public GuardianCrawler(TagService tagService, DataBlockService dataBlockService) {
         this.tagService = tagService;
-        this.tagRepository = tagRepository;
+        this.dataBlockService = dataBlockService;
     }
 
     @Override
@@ -69,6 +65,7 @@ public class GuardianCrawler extends WebCrawler {
     }
 
     @Override
+    @Transactional
     public void visit(Page page) {
         String url = page.getWebURL().getURL();
         String dateString;
@@ -88,7 +85,7 @@ public class GuardianCrawler extends WebCrawler {
                 tags = document.body().select("div").select(".submeta__link-item").eachText()
                         .stream().map(tagService::findOrCreateTag).collect(Collectors.toList());
             }
-       DataBlock dataBlock = DataBlock.builder()
+            DataBlock dataBlock = DataBlock.builder()
                     .origin(DataSource.GUARDIAN)
                     .content(articleBody)
                     .tags(tags)
@@ -98,10 +95,7 @@ public class GuardianCrawler extends WebCrawler {
                     .build();
             dataBlock.createContentHash();
 
-            if(!dataBlockRepository.findByContentHash(dataBlock.getContentHash()).isPresent()) {
-                Hibernate.initialize(dataBlock.getTags());
-                dataBlockRepository.save(dataBlock);
-            }
+            dataBlockService.save(dataBlock);
         }
     }
 

@@ -16,7 +16,7 @@ public class TagService {
 
     private Tag createTag(String content) {
         Tag tag = Tag.builder()
-                .content(content)
+                .content(content.replaceAll("\u0000", ""))
                 .build();
         return tagRepository.save(tag);
     }

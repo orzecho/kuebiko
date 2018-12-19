@@ -40,10 +40,10 @@ public class ParagraphVectorsTrainingService {
         ParagraphVectors paragraphVectors = paragraphVectorsService.train(paragraphVectorsConfiguration);
         dataBlockList.forEach(dataBlock -> {
             dataBlock.setParagraphVectorsUnprocessed(false);
-            dataBlock.getTags().forEach(e -> {
-                e.setParagraphVectorsProcessed(true);
-                tagRepository.save(e);
-            });
+//            dataBlock.getTags().forEach(e -> {
+//                e.setParagraphVectorsProcessed(true);
+//                tagRepository.save(e);
+//            });
             dataBlockRepository.save(dataBlock);
         });
         WordVectorSerializer.writeWord2VecModel(paragraphVectors, PARAGRAPH_VECTORS_MODEL_PATH);

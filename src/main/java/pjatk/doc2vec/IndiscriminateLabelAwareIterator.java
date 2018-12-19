@@ -32,7 +32,10 @@ public class IndiscriminateLabelAwareIterator implements LabelAwareSentenceItera
 
     @Override
     public List<String> currentLabels() {
-        return currentTags.stream().map(Tag::getContent).collect(Collectors.toList());
+        return currentTags.stream()
+                .peek(e -> e.setParagraphVectorsProcessed(true))
+                .map(Tag::getContent)
+                .collect(Collectors.toList());
     }
 
     @Override

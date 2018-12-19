@@ -15,6 +15,8 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.Transient;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -39,7 +41,7 @@ public class DataBlock {
     @Lob
     private String content;
     @Column(unique = true)
-    private String contentHash;
+    private byte[] contentHash;
     @ManyToMany
     @JoinTable(name = "DATABLOCK_TAG",
             joinColumns = { @JoinColumn(name = "DATABLOCK_ID") },
@@ -54,6 +56,7 @@ public class DataBlock {
     @Setter
     private Double cosineSimilarityToGoodWords;
 
+    @Transactional
     public void createContentHash() {
         MessageDigest messageDigest = null;
         try {
@@ -63,7 +66,7 @@ public class DataBlock {
         }
         assert messageDigest != null;
         messageDigest.update(this.content.getBytes());
-        this.contentHash = new String(messageDigest.digest());
+        this.contentHash = messageDigest.digest();
     }
 
     @Transient

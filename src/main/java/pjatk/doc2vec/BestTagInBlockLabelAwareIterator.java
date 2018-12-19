@@ -9,10 +9,12 @@ import java.util.Map;
 import org.deeplearning4j.text.sentenceiterator.SentencePreProcessor;
 import org.deeplearning4j.text.sentenceiterator.labelaware.LabelAwareSentenceIterator;
 
+import lombok.extern.slf4j.Slf4j;
 import pjatk.domain.data.DataBlock;
 import pjatk.domain.data.DataTrainingModel;
 import pjatk.domain.data.Tag;
 
+@Slf4j
 public class BestTagInBlockLabelAwareIterator implements LabelAwareSentenceIterator {
     private final DataTrainingModel dataTrainingModel;
     private final Map<Tag, Long> tagCount;
@@ -35,6 +37,8 @@ public class BestTagInBlockLabelAwareIterator implements LabelAwareSentenceItera
                     tagCount.put(tag, 1L);
                 }
         }));
+        log.info("{} tags counted", tagCount.size());
+        log.info("Max tag count: {}", tagCount.values().stream().max(Long::compare).orElse(0l));
     }
 
     @Override
@@ -42,7 +46,10 @@ public class BestTagInBlockLabelAwareIterator implements LabelAwareSentenceItera
         return tagCount.entrySet().stream()
                 .filter(entry -> currentTags.contains(entry.getKey()))
                 .max(Comparator.comparingLong(Map.Entry::getValue))
-                .map(e -> e.getKey().getContent())
+                .map(e -> {
+                    e.getKey().setParagraphVectorsProcessed(true);
+                    return e.getKey().getContent();
+                })
                 .orElse("");
     }
 
