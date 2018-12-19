@@ -33,14 +33,14 @@ public class ParagraphVectorsConfiguration {
     public static ParagraphVectorsConfiguration defaultConfiguration(LabelAwareSentenceIterator sentenceIterator,
             List<String> labels) {
         return ParagraphVectorsConfiguration.builder()
-                .iterations(50) //TODO this should be tailored
-                .epochs(1) //TODO this should be tailored
+                .iterations(20)
+                .epochs(10)
                 .layerSize(100)
                 .seed(42)
                 .minWordFrequency(3)
                 .windowSize(5)
                 .labelAwareSentenceIterator(sentenceIterator)
-                .stopWords(new ArrayList<>()) //TODO really?
+                .stopWords(new ArrayList<>())
                 .tokenizerFactory(Word2VecConfiguration.getDefaultTokenizerFactory())
                 .labelsSource(new LabelsSource(labels))
                 .build();
