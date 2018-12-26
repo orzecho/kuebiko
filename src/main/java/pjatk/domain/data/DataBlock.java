@@ -11,7 +11,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
-import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.Transient;
 
@@ -38,7 +37,8 @@ public class DataBlock {
     private Long id;
     private DataSource origin;
     private LocalDate date;
-    @Lob
+//    @Lob
+    @Column(columnDefinition="TEXT")
     private String content;
     @Column(unique = true)
     private byte[] contentHash;

@@ -1,6 +1,5 @@
 package pjatk.crawler;
 
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import edu.uci.ics.crawler4j.crawler.CrawlConfig;
@@ -17,7 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 public class GuardianCrawlerJob {
     private final GuardianCrawlerFactory guardianCrawlerFactory;
 
-    @Scheduled(fixedDelay = 1000 * 60 * 60 * 24)
+//    @Scheduled(fixedDelay = 1000 * 60 * 60 * 24)
     public void crawl() throws Exception {
         log.info("Starting crawl job.");
         String crawlStorageFolder = "./data/crawl/root";
@@ -32,6 +31,10 @@ public class GuardianCrawlerJob {
         CrawlController controller = new CrawlController(config, pageFetcher, robotstxtServer);
 
         controller.addSeed("https://www.theguardian.com/");
+        controller.addSeed("https://www.theguardian.com/international");
+        controller.addSeed("https://www.theguardian.com/uk/commentisfree");
+        controller.addSeed("https://www.theguardian.com/uk/culture");
+        controller.addSeed("https://www.theguardian.com/world");
 
         controller.start(guardianCrawlerFactory, numberOfCrawlers);
         log.info("Ended crawl job.");

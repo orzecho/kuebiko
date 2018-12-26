@@ -85,17 +85,19 @@ public class GuardianCrawler extends WebCrawler {
                 tags = document.body().select("div").select(".submeta__link-item").eachText()
                         .stream().map(tagService::findOrCreateTag).collect(Collectors.toList());
             }
-            DataBlock dataBlock = DataBlock.builder()
-                    .origin(DataSource.GUARDIAN)
-                    .content(articleBody)
-                    .tags(tags)
-                    .date(parseDateString(dateString).orElse(null))
-                    .word2VecUnprocessed(true)
-                    .paragraphVectorsUnprocessed(true)
-                    .build();
-            dataBlock.createContentHash();
+            if (articleBody != null && !articleBody.isEmpty()) {
+                DataBlock dataBlock = DataBlock.builder()
+                        .origin(DataSource.GUARDIAN)
+                        .content(articleBody)
+                        .tags(tags)
+                        .date(parseDateString(dateString).orElse(null))
+                        .word2VecUnprocessed(true)
+                        .paragraphVectorsUnprocessed(true)
+                        .build();
+                dataBlock.createContentHash();
 
-            dataBlockService.save(dataBlock);
+                dataBlockService.save(dataBlock);
+            }
         }
     }
 

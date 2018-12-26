@@ -34,7 +34,7 @@ public class ParagraphVectorsConfiguration {
             List<String> labels) {
         return ParagraphVectorsConfiguration.builder()
                 .iterations(20)
-                .epochs(10)
+                .epochs(5)
                 .layerSize(100)
                 .seed(42)
                 .minWordFrequency(3)
