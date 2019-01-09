@@ -1,4 +1,4 @@
-package pjatk.doc2vec;
+package pjatk.doc2vec.iterators;
 
 import java.util.Comparator;
 import java.util.HashMap;

@@ -1,4 +1,4 @@
-package pjatk.doc2vec;
+package pjatk.doc2vec.service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +12,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import pjatk.doc2vec.fetchers.DataBlockFetcher;
+import pjatk.doc2vec.iterators.LabelAwareSentenceIteratorFactory;
+import pjatk.doc2vec.service.ParagraphVectorsService;
 import pjatk.domain.data.DataBlock;
 import pjatk.domain.data.DataTrainingModel;
 import pjatk.domain.data.Tag;

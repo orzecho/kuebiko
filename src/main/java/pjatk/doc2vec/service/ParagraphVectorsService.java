@@ -1,4 +1,4 @@
-package pjatk.doc2vec;
+package pjatk.doc2vec.service;
 
 import org.deeplearning4j.models.paragraphvectors.ParagraphVectors;
 import org.springframework.stereotype.Service;

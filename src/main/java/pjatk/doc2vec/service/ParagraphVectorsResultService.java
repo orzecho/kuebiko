@@ -1,4 +1,4 @@
-package pjatk.doc2vec;
+package pjatk.doc2vec.service;
 
 import java.util.Comparator;
 import java.util.List;
@@ -14,6 +14,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import pjatk.doc2vec.fetchers.DataBlockFetcher;
+import pjatk.doc2vec.fetchers.LabelFetcher;
+import pjatk.doc2vec.service.LabelSeekerService;
+import pjatk.doc2vec.service.MeansBuilderService;
 import pjatk.domain.data.DataBlock;
 import pjatk.domain.data.ParagraphVectorsResult;
 import pjatk.domain.data.Score;

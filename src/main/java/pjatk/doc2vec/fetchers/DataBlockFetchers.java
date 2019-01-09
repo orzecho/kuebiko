@@ -1,4 +1,4 @@
-package pjatk.doc2vec;
+package pjatk.doc2vec.fetchers;
 
 import java.util.Comparator;
 import java.util.HashMap;
@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import pjatk.doc2vec.fetchers.DataBlockFetcher;
 import pjatk.domain.data.DataBlock;
 import pjatk.domain.data.Tag;
 import pjatk.persist.DataBlockRepository;

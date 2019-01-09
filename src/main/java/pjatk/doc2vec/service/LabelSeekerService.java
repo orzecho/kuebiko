@@ -1,4 +1,4 @@
-package pjatk.doc2vec;
+package pjatk.doc2vec.service;
 
 import java.util.List;
 import java.util.stream.Collectors;

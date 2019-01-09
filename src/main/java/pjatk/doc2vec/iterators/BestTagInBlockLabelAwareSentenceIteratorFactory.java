@@ -1,4 +1,4 @@
-package pjatk.doc2vec;
+package pjatk.doc2vec.iterators;
 
 import org.deeplearning4j.text.sentenceiterator.labelaware.LabelAwareSentenceIterator;
 

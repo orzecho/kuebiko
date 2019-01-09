@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import static pjatk.doc2vec.DataBlockFetchers.blocksWithBestTags;
+import static pjatk.doc2vec.fetchers.DataBlockFetchers.blocksWithBestTags;
 import pjatk.domain.data.DataBlock;
 import pjatk.persist.DataBlockRepository;
 import pjatk.persist.TagRepository;

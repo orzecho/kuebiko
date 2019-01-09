@@ -1,4 +1,4 @@
-package pjatk.doc2vec;
+package pjatk.doc2vec.iterators;
 
 import java.util.Iterator;
 import java.util.List;

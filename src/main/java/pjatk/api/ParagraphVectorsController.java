@@ -9,14 +9,14 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import pjatk.doc2vec.BestTagInBlockLabelAwareSentenceIteratorFactory;
-import static pjatk.doc2vec.DataBlockFetchers.allUnprocessedBlocks;
-import static pjatk.doc2vec.DataBlockFetchers.halfOfBlocksWithBestTags;
-import static pjatk.doc2vec.DataBlockFetchers.halfOfBlocks;
-import pjatk.doc2vec.IndiscriminateLabelAwareSentenceIteratorFactory;
-import static pjatk.doc2vec.LabelFetchers.allProcessedLabels;
-import pjatk.doc2vec.ParagraphVectorsResultService;
-import pjatk.doc2vec.ParagraphVectorsTrainingService;
+import pjatk.doc2vec.iterators.BestTagInBlockLabelAwareSentenceIteratorFactory;
+import static pjatk.doc2vec.fetchers.DataBlockFetchers.allUnprocessedBlocks;
+import static pjatk.doc2vec.fetchers.DataBlockFetchers.halfOfBlocksWithBestTags;
+import static pjatk.doc2vec.fetchers.DataBlockFetchers.halfOfBlocks;
+import pjatk.doc2vec.iterators.IndiscriminateLabelAwareSentenceIteratorFactory;
+import static pjatk.doc2vec.fetchers.LabelFetchers.allProcessedLabels;
+import pjatk.doc2vec.service.ParagraphVectorsResultService;
+import pjatk.doc2vec.service.ParagraphVectorsTrainingService;
 import pjatk.domain.service.DataBlockService;
 
 @RestController

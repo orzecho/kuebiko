@@ -1,7 +1,8 @@
-package pjatk.doc2vec;
+package pjatk.doc2vec.fetchers;
 
 import java.util.stream.Collectors;
 
+import pjatk.doc2vec.fetchers.LabelFetcher;
 import pjatk.domain.data.Tag;
 
 public class LabelFetchers {
