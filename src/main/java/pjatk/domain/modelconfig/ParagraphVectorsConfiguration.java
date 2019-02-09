@@ -35,7 +35,7 @@ public class ParagraphVectorsConfiguration {
         return ParagraphVectorsConfiguration.builder()
                 .iterations(20)
                 .epochs(5)
-                .layerSize(100)
+                .layerSize(200)
                 .seed(42)
                 .minWordFrequency(3)
                 .windowSize(5)
